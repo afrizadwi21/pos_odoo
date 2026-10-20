@@ -87,8 +87,13 @@ class PosCustomOrderLine(models.Model):
         ondelete='cascade',
         required=True
     )
+    product_id = fields.Many2one(
+        'pos.food.product',
+        string='Pilih Menu',
+        domain="[('is_available', '=', True)]"
+    )
     product_name = fields.Char(
-        string='Nama Produk / Barang',
+        string='Nama Menu / Item',
         required=True
     )
     qty = fields.Float(
@@ -106,6 +111,12 @@ class PosCustomOrderLine(models.Model):
         compute='_compute_subtotal',
         store=True
     )
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        if self.product_id:
+            self.product_name = self.product_id.name
+            self.price_unit = self.product_id.price
 
     @api.depends('qty', 'price_unit')
     def _compute_subtotal(self):

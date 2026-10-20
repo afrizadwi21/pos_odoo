@@ -8,6 +8,7 @@
     "data": [
         "security/ir.access.csv",
         "views/pos_order_views.xml",
+        "views/pos_product_views.xml",
     ],
     "installable": True,
     "application": True,

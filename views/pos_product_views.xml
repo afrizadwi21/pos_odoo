@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================== FOOD PRODUCT ==================== -->
+
+    <!-- Food Product List View -->
+    <record id="view_pos_food_product_list" model="ir.ui.view">
+        <field name="name">pos.food.product.list</field>
+        <field name="model">pos.food.product</field>
+        <field name="arch" type="xml">
+            <list string="Daftar Menu Makanan &amp; Minuman" decoration-muted="not is_available">
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="price"/>
+                <field name="cost_price" optional="hide"/>
+                <field name="is_available" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Food Product Form View -->
+    <record id="view_pos_food_product_form" model="ir.ui.view">
+        <field name="name">pos.food.product.form</field>
+        <field name="model">pos.food.product</field>
+        <field name="arch" type="xml">
+            <form string="Menu Makanan &amp; Minuman">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nama Menu / Produk"/>
+                        <h1>
+                            <field name="name" placeholder="Misal: Nasi Goreng Spesial / Es Kopi Susu"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Informasi Produk">
+                            <field name="category_id" placeholder="Pilih Kategori Menu"/>
+                            <field name="is_available"/>
+                        </group>
+                        <group string="Harga (Rp)">
+                            <field name="price"/>
+                            <field name="cost_price"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Deskripsi &amp; Komposisi" name="description">
+                            <field name="description" placeholder="Catatan bahan, resep, atau keterangan menu..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Food Product Search View -->
+    <record id="view_pos_food_product_search" model="ir.ui.view">
+        <field name="name">pos.food.product.search</field>
+        <field name="model">pos.food.product</field>
+        <field name="arch" type="xml">
+            <search string="Cari Menu Makanan">
+                <field name="name" string="Nama Menu"/>
+                <field name="category_id" string="Kategori"/>
+                <separator/>
+                <filter string="Tersedia" name="filter_available" domain="[('is_available', '=', True)]"/>
+                <filter string="Habis / Nonaktif" name="filter_unavailable" domain="[('is_available', '=', False)]"/>
+                <group>
+                    <filter string="Kategori" name="group_category" context="{'group_by': 'category_id'}"/>
+                    <filter string="Ketersediaan" name="group_availability" context="{'group_by': 'is_available'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Food Product Action Window -->
+    <record id="action_pos_food_product" model="ir.actions.act_window">
+        <field name="name">Menu Makanan &amp; Minuman</field>
+        <field name="res_model">pos.food.product</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pos_food_product_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada menu makanan atau minuman!
+            </p>
+            <p>
+                Klik tombol <b>Baru</b> untuk menambahkan produk makanan/minuman yang dijual.
+            </p>
+        </field>
+    </record>
+
+
+    <!-- ==================== FOOD CATEGORY ==================== -->
+
+    <!-- Category List View -->
+    <record id="view_pos_food_category_list" model="ir.ui.view">
+        <field name="name">pos.food.category.list</field>
+        <field name="model">pos.food.category</field>
+        <field name="arch" type="xml">
+            <list string="Kategori Menu">
+                <field name="name"/>
+                <field name="product_count" string="Jumlah Item"/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Category Form View -->
+    <record id="view_pos_food_category_form" model="ir.ui.view">
+        <field name="name">pos.food.category.form</field>
+        <field name="model">pos.food.category</field>
+        <field name="arch" type="xml">
+            <form string="Kategori Menu">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nama Kategori"/>
+                        <h1>
+                            <field name="name" placeholder="Misal: Makanan Berat, Minuman Dingin, Snack"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="description" placeholder="Keterangan kategori..."/>
+                    </group>
+                    <notebook>
+                        <page string="Daftar Menu Terkait" name="products">
+                            <field name="product_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="price"/>
+                                    <field name="is_available"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Category Action Window -->
+    <record id="action_pos_food_category" model="ir.actions.act_window">
+        <field name="name">Kategori Menu</field>
+        <field name="res_model">pos.food.category</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada kategori menu!
+            </p>
+            <p>
+                Buat kategori baru untuk mengelompokkan makanan dan minuman (contoh: Makanan, Minuman, Snack, Dessert).
+            </p>
+        </field>
+    </record>
+
+
+    <!-- ==================== MENUS ==================== -->
+
+    <menuitem id="pos_odoo_master_menu" name="Master Menu" parent="pos_odoo_root_menu" sequence="20"/>
+    <menuitem id="pos_odoo_food_product_menu" name="Menu Makanan &amp; Minuman" parent="pos_odoo_master_menu" action="action_pos_food_product" sequence="10"/>
+    <menuitem id="pos_odoo_food_category_menu" name="Kategori Menu" parent="pos_odoo_master_menu" action="action_pos_food_category" sequence="20"/>
+
+</odoo>
+
