@@ -10,6 +10,11 @@
         "views/pos_order_views.xml",
         "views/pos_product_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "pos_odoo/static/src/scss/pos_mobile.scss",
+        ],
+    },
     "installable": True,
     "application": True,
     "license": "LGPL-3",

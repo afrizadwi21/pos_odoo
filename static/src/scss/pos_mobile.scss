@@ -1,0 +1,38 @@
+
+.o_kanban_view .o_kanban_record {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    border-radius: 14px !important;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+
+@media (max-width: 767.98px) {
+    
+    .o_form_statusbar .btn {
+        min-height: 42px;
+        font-weight: 600;
+        border-radius: 10px;
+        margin-bottom: 6px;
+    }
+    .o_kanban_view .o_kanban_renderer {
+        padding: 8px !important;
+    }
+
+    .o_kanban_record {
+        margin-bottom: 12px !important;
+    }
+
+    .oe_subtotal_footer {
+        font-size: 1.25rem !important;
+        font-weight: 700 !important;
+        color: #4f46e5;
+    }
+}
