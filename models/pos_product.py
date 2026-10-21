@@ -35,6 +35,11 @@ class PosFoodProduct(models.Model):
         string='Kategori Menu',
         required=True
     )
+    image_1920 = fields.Image(
+        string='Foto Menu',
+        max_width=1920,
+        max_height=1920
+    )
     price = fields.Float(
         string='Harga Jual (Rp)',
         required=True,
