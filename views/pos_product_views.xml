@@ -70,11 +70,52 @@
         </field>
     </record>
 
+    <!-- Food Product Kanban View (Card View) -->
+    <record id="view_pos_food_product_kanban" model="ir.ui.view">
+        <field name="name">pos.food.product.kanban</field>
+        <field name="model">pos.food.product</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="price"/>
+                <field name="is_available"/>
+                <field name="image_1920"/>
+                <templates>
+                    <t t-name="card" class="flex-column p-0 overflow-hidden shadow-sm border rounded">
+                        <widget name="web_ribbon" title="Habis" bg_color="text-bg-danger" invisible="is_available"/>
+                        <div class="position-relative bg-light d-flex align-items-center justify-content-center" style="height: 140px; overflow: hidden;">
+                            <field name="image_1920" widget="image" options="{'img_class': 'w-100 h-100 object-fit-cover'}" alt="Foto Menu"/>
+                        </div>
+                        <div class="p-3 d-flex flex-column gap-1 flex-grow-1">
+                            <strong class="fs-5 text-truncate">
+                                <field name="name"/>
+                            </strong>
+                            <div class="text-muted small">
+                                <span class="badge text-bg-light border">
+                                    <field name="category_id"/>
+                                </span>
+                            </div>
+                            <div class="mt-auto pt-2 d-flex justify-content-between align-items-center">
+                                <span class="fs-5 fw-bold text-primary">
+                                    Rp <field name="price"/>
+                                </span>
+                                <field name="is_available" widget="boolean_toggle"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <!-- Food Product Action Window -->
     <record id="action_pos_food_product" model="ir.actions.act_window">
         <field name="name">Menu Makanan &amp; Minuman</field>
         <field name="res_model">pos.food.product</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_group_category': 1}</field>
         <field name="search_view_id" ref="view_pos_food_product_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
