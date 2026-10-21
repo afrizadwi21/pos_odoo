@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- List View -->
     <record id="view_pos_custom_order_list" model="ir.ui.view">
         <field name="name">pos.custom.order.list</field>
         <field name="model">pos.custom.order</field>
@@ -17,8 +15,6 @@
             </list>
         </field>
     </record>
-
-    <!-- Form View -->
     <record id="view_pos_custom_order_form" model="ir.ui.view">
         <field name="name">pos.custom.order.form</field>
         <field name="model">pos.custom.order</field>
@@ -70,8 +66,6 @@
             </form>
         </field>
     </record>
-
-    <!-- Search View -->
     <record id="view_pos_custom_order_search" model="ir.ui.view">
         <field name="name">pos.custom.order.search</field>
         <field name="model">pos.custom.order</field>
@@ -81,19 +75,24 @@
                 <field name="partner_id" string="Pelanggan"/>
                 <field name="cashier_id" string="Kasir"/>
                 <separator/>
-                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
-                <filter string="Lunas" name="filter_paid" domain="[('state', '=', 'paid')]"/>
-                <filter string="Dibatalkan" name="filter_cancel" domain="[('state', '=', 'cancel')]"/>
+                <filter name="filter_paid" string="Lunas / Selesai" domain="[('state', '=', 'paid')]"/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_cancel" string="Dibatalkan" domain="[('state', '=', 'cancel')]"/>
+                <separator/>
+                <filter name="filter_order_date" date="order_date"/>
                 <group>
-                    <filter string="Kasir" name="group_cashier" context="{'group_by': 'cashier_id'}"/>
-                    <filter string="Pelanggan" name="group_partner" context="{'group_by': 'partner_id'}"/>
-                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter name="group_order_day" string="Hari (Day to Day)" context="{'group_by': 'order_date:day'}"/>
+                    <filter name="group_order_month" string="Bulan (Month to Month)" context="{'group_by': 'order_date:month'}"/>
+                    <filter name="group_order_year" string="Tahun" context="{'group_by': 'order_date:year'}"/>
+                    <filter name="group_payment" string="Metode Pembayaran" context="{'group_by': 'payment_method'}"/>
+                    <filter name="group_cashier" string="Kasir" context="{'group_by': 'cashier_id'}"/>
+                    <filter name="group_partner" string="Pelanggan" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <!-- Mobile Kanban View for POS Orders -->
     <record id="view_pos_custom_order_kanban" model="ir.ui.view">
         <field name="name">pos.custom.order.kanban</field>
         <field name="model">pos.custom.order</field>
@@ -133,11 +132,36 @@
         </field>
     </record>
 
-    <!-- Action Window -->
+    <!-- Sales Graph View (Month to Month &amp; Day to Day) -->
+    <record id="view_pos_custom_order_graph" model="ir.ui.view">
+        <field name="name">pos.custom.order.graph</field>
+        <field name="model">pos.custom.order</field>
+        <field name="arch" type="xml">
+            <graph string="Grafik Penjualan Kasir" sample="1" type="bar">
+                <field name="order_date" interval="day"/>
+                <field name="total_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Sales Pivot View -->
+    <record id="view_pos_custom_order_pivot" model="ir.ui.view">
+        <field name="name">pos.custom.order.pivot</field>
+        <field name="model">pos.custom.order</field>
+        <field name="arch" type="xml">
+            <pivot string="Analisis Penjualan Kasir" sample="1">
+                <field name="order_date" interval="month" type="row"/>
+                <field name="payment_method" type="col"/>
+                <field name="total_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Action Window for Orders -->
     <record id="action_pos_custom_order" model="ir.actions.act_window">
         <field name="name">Order Penjualan Kasir</field>
         <field name="res_model">pos.custom.order</field>
-        <field name="view_mode">kanban,list,form</field>
+        <field name="view_mode">kanban,list,form,graph,pivot</field>
         <field name="search_view_id" ref="view_pos_custom_order_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -149,9 +173,47 @@
         </field>
     </record>
 
+    <!-- Action Window for Sales Graph -->
+    <record id="action_pos_custom_order_report_graph" model="ir.actions.act_window">
+        <field name="name">Grafik Penjualan</field>
+        <field name="res_model">pos.custom.order</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="context">{'search_default_filter_paid': 1, 'search_default_group_order_day': 1}</field>
+        <field name="search_view_id" ref="view_pos_custom_order_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada data grafik penjualan!
+            </p>
+            <p>
+                Grafik ini menampilkan tren penjualan dari hari ke hari (day to day) dan bulan ke bulan (month to month).
+            </p>
+        </field>
+    </record>
+
+    <!-- Action Window for Sales Pivot Analysis -->
+    <record id="action_pos_custom_order_report_pivot" model="ir.actions.act_window">
+        <field name="name">Analisis Penjualan</field>
+        <field name="res_model">pos.custom.order</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_filter_paid': 1, 'search_default_group_order_month': 1}</field>
+        <field name="search_view_id" ref="view_pos_custom_order_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada data analisis penjualan!
+            </p>
+            <p>
+                Tabel pivot memungkinkan analisis pendapatan berdasarkan bulan, hari, metode pembayaran, dan kasir.
+            </p>
+        </field>
+    </record>
+
     <!-- Menus -->
     <menuitem id="pos_odoo_root_menu" name="POS Odoo" web_icon="pos_odoo,static/description/icon.png" sequence="10"/>
     <menuitem id="pos_odoo_transaction_menu" name="Transaksi" parent="pos_odoo_root_menu" sequence="10"/>
     <menuitem id="pos_odoo_order_menu" name="Order Kasir" parent="pos_odoo_transaction_menu" action="action_pos_custom_order" sequence="10"/>
+
+    <menuitem id="pos_odoo_report_menu" name="Laporan" parent="pos_odoo_root_menu" sequence="30"/>
+    <menuitem id="pos_odoo_report_graph_menu" name="Grafik Penjualan" parent="pos_odoo_report_menu" action="action_pos_custom_order_report_graph" sequence="10"/>
+    <menuitem id="pos_odoo_report_pivot_menu" name="Analisis Penjualan" parent="pos_odoo_report_menu" action="action_pos_custom_order_report_pivot" sequence="20"/>
 
 </odoo>
